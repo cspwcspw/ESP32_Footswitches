@@ -65,7 +65,7 @@ void loop() {
 }
 
 ```
-So this step is successful.  I've managed to turn my guitar
+Yay, this works!  I've managed to turn my guitar
 amplifier into a blinking LED.
   
 ## Latching or instantaneous functions?
@@ -75,10 +75,12 @@ latching switch.  That means you press and release
 the foot switch, and REVERB turns on.  Next time you 
 press and release the foot switch, REVERB turns off.
 
-Other effects may be better with an instantaneous 
+Other effects need an instantaneous (sometimes called momentary)
 foot switch: the effect is only active while you keep
-the switch pressed down.  Some timing and delay 
-functions work well like this. 
+the switch pressed down. For example, the looper stop
+switch is instantaneous - a single click on the footswitch 
+will stop the looper playback.  But if you hold it down 
+for a couple of seconds, it clears the looper memory. 
 
 Each switch on the Boss FS-6 footswich can be selected to 
 be either instantaneous or latching. 
@@ -86,27 +88,28 @@ be either instantaneous or latching.
 For us to get the same effect in software is easy. If 
 we have a push button switch with no mechanical 
 latching (e.g. a door bell switch or a mouse button), 
-we will detect and respond to the two different transitions -
-__switchClosed__ and __switchOpened__. 
+we will detect and respond to its two different transitions -
+__switchGotClosed__ and __switchGotOpened__, differently if we
+want latching or not. 
 
 The software here is organized in 
 three components: a class for 
 managing an output line to the
 amp, and a class for handling an 
 input (a switch, a mouse button, 
-a touch controller, etc), and the main controller loop
+a touch controller, etc), and the main loop
 that instantiates the input and output objects and 
 determines the cross-connects between inputs and outputs,
 and passes event messages between the components. 
 
 One design decision is where to 
-locate this "latching" memory in our ESP32 
+locate this "latching" functionality in our ESP32 
 software.  It seems that it is the line that needs to
 latch (as opposed to a mechanical latching switch like a 
 bedside lamp), so in this software latching is the 
 responsibility of the output line driver component. 
 
-## A six-switch pedalboard, version 1
+## A six-switch pedalboard
 
 I bought a handful of proximity touch sensor switches 
 from Banggood, typically about $9 for 20 switches.  
@@ -123,28 +126,34 @@ left mine all instantaneous, and will deal
 with latching in the software. They can sense touch through or
 behind a non-conductive cover plate of a couple of millimeters 
 of perspex, glass, wood, etc., so in principle, we should be able
-to make the front our our pedal board look great.
+to make our pedal board tough, waterproof, and
+make it look great.
 
 The board itself was a discarded piece of shelf wood.  I cut some
-really ugly recesses in the front so that the six switches would
+untidy recesses in the front so that the six switches would
 sit flush with the top wood surface, drilled holes through for the
 wiring. 
+
 ![frontRecesses](Images/front_recesses.jpg "Front Recesses")
 
 I routed some channels in the back of the board for 
 wiring. 
+
 ![rearChannels](Images/rear_channels.jpg "Rear channels")
 
 Each sensor needs Vcc, Ground, and has an output line which goes
-high or low. The Vcc and Ground pins can all be wired on
+high or low. The Vcc and Ground pins can all use a 
 a common bus.  So in total I needed an 8-wire cable from the board
 back to the ESP32: six switch outputs, Vcc, and Ground. Ethernet 
-cable has 8-cores, and I had some lying around. So here is the 
+cable has 8 cores, and I had some lying around. Here is the 
 wiring harness being put in place:  
+
 ![rearWiring](Images/rear_wiring.jpg "Rear wiring")
 
-And here we have the first few switches soldered in place in front.
-![frontSoldering](Images/front_soldering.jpg "Front_soldering")
+And here we have the first few switches soldered in place on the front of
+the board.
+
+![frontSoldering](Images/front_soldering.jpg "Front soldering")
 
 ## Conclusion
 
@@ -152,28 +161,35 @@ Ideally we need some pretty trim on the front to make it look better,
 and we could screw an extra piece of plywood over the wiring at
 the back (even adding some nice rubber feet).  We might even want
 to move the ESP32 and a power source down into a recess in the back
-of the board. So far I've not done that.
+of the board, and add output LEDs to reflect the state of the lines
+on the pedalboard.  (There are enough GPIOs for individually wiring
+six switch inputs, six line drivers, and six indicator LED).
+To date I've not done that.
 
 The switches are a bit problematic because rubber soles
 may not provide a reliable trigger. So perhaps 
-this design works best for bare-footed guitarists. Obviously
-we can replace them with other switches or proximity sensors - 
+this design works best for bare-footed guitarists. 
+
+Obviously we can replace them with other switches or proximity sensors - 
 I have a handful of TLP909 proximity sensors somewhere that 
 are candidates.  They have an infrared emitter and an 
 infrared detector, and are triggered by photoreflectivity.
 Typically they are used in photocopiers to detect paper. 
 So provided your shoe soles are white, you should be fine.
 
-*Last Revision 26 September 2019*  
+I await some stomp-box switches that I bought for less than $2 each. 
+
+![stompSwitches](Images/stomp_switches.png "Stomp Switches")
+
+So all in all, $20 with the logic of an ESP32 gave me a 
+fun little project that enables foot switch control of the 
+features on my amp 
+(and is extensible to do even more in future) at a fraction of 
+the cost of buying the recommended accessories.
+
+ 
+*Last Revision 27 September 2019*  
 mailto:cspwcspw@gmail.com 
-
-
-
-
-
-
-
-
 
 
 
