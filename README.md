@@ -23,7 +23,7 @@ different input controllers to our ESP32: our own switches,
 of some kind, or software configurations, touch screen, 
 commands over USB, WiFi or Bluetooth, etc.
 
-I'll show a simple controller later: a
+I'll show a simple proof-of-concept controller later: a
 very low-end and cheap implementation. Probably not 
 the right thing for your concert in Hyde Park,
 but good enough for home use. 
@@ -116,9 +116,9 @@ from Banggood, typically about $9 for 20 switches.
 
 ![touchSensors](Images/touch_sensors.jpg "Touch Sensors")
 
-The ones I have "learn" their capacitance when they are first
+The ones I have learn their capacitance when they are first
 powered on, and then detect when a finger gets close enough.
-Interestingly too, they can work as latching or instantaneous
+They too can work as latching or instantaneous
 switches, but it involves cutting a track on the board to 
 change function. These ones also have little on-board LEDs that
 light when the switch is triggered. I 
@@ -155,20 +155,71 @@ the board.
 
 ![frontSoldering](Images/front_soldering.jpg "Front soldering")
 
+Here is the final foot switch, with a couple of plectrums glued over
+the touch sensors. 
+
+![finalFront](Images/final_front_of_board.jpg "Front of prototype board")
+
+Then the three output jacks that plug into the amp.
+
+![jackplugs](Images/jackplugs.jpg "Jackplugs for amp")
+
+The ESP32 has the upper cable carrying the inputs from the pedalboard,
+and the lower cable carrying the outputs to the jack plugs.  The ESP32 Devkit 
+is a bit too wide to play nicely with standard breadboard spacing, 
+so I cut the breadboard in half length-ways, spread it out, and attach 
+it to a piece of wood. It gives a nice way to secure cabling with 
+cable ties, and there is a convenient "tunnel" under the ESP32 that 
+can make wiring a bit tidier. 
+
+![breadboard](Images/breadboard.jpg "Bread board prototype")
+
+The ESP32 code for the Arduino IDE is in the repository. 
+
+## Version 2
+
+The board creates some white noise in the amp if I power it
+from the USB on my laptop. Presumably I have an earth loop - the amp is 
+earthed, the laptop is earthed, and I've created an earth path
+via USB to the ESP32 and then to the switches.  The noise goes
+away if I run from a USB power bank or battery power.  
+
+So I added six opto-couplers to isolates the ESP32 from
+the amplifier.  As a by-product, the opto-couplers (I managed to
+source some TLP620's from a friend over the weekend) invert the 
+signal. So the logic is simpler: the microcontroller drives the 
+output line (the LED side of the optocoupler) either HIGH or LOW, 
+the output side of the transistor turns on (current flows, amplifier
+sees the line is LOW) or the opto transistor turns off -
+the amplifier pulls the line up and the amp sees a HIGH. 
+
+The amplifier earth is now isolated from the ESP32 earth, 
+which removes my earth loop and solved my noise issue. 
+
+As part of integrating the opto-couplers I also soldered 
+everything down onto a prototyping PCB, making version two
+somewhat neater than the one on my breadboard.
+
+![version2](Images/version2.jpg "Soldered Version 2")
+
+
+
 ## Conclusion
 
+
+
+It is a prototype, intended as a proof-of-concept. 
 Ideally we need some pretty trim on the front to make it look better, 
 and we could screw an extra piece of plywood over the wiring at
 the back (even adding some nice rubber feet).  We might even want
 to move the ESP32 and a power source down into a recess in the back
 of the board, and add output LEDs to reflect the state of the lines
 on the pedalboard.  (There are enough GPIOs for individually wiring
-six switch inputs, six line drivers, and six indicator LED).
+six switch inputs, six line drivers, and six indicator LEDs).
 To date I've not done that.
 
-The switches are a bit problematic because rubber soles
-may not provide a reliable trigger. So perhaps 
-this design works best for bare-footed guitarists. 
+The switches are not reliable with rubber soles on your shoes.
+So perhaps this design works best for bare-footed guitarists. 
 
 Obviously we can replace them with other switches or proximity sensors - 
 I have a handful of TLP909 proximity sensors somewhere that 
@@ -177,18 +228,19 @@ infrared detector, and are triggered by photoreflectivity.
 Typically they are used in photocopiers to detect paper. 
 So provided your shoe soles are white, you should be fine.
 
-I await some stomp-box switches that I bought for less than $2 each. 
+I await some stomp-box switches that I bought for less than $2 each,
+and I might have a go at "Version 3". 
 
 ![stompSwitches](Images/stomp_switches.png "Stomp Switches")
 
 So all in all, $20 with the logic of an ESP32 gave me a 
-fun little project that enables foot switch control of the 
+fun project that enables foot switch control of the 
 features on my amp 
 (and is extensible to do even more in future) at a fraction of 
 the cost of buying the recommended accessories.
 
- 
-*Last Revision 27 September 2019*  
+
+*Last Revision 30 September 2019*  
 mailto:cspwcspw@gmail.com 
 
 
